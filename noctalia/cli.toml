@@ -1,0 +1,3 @@
+[components.shell]
+source = "git"
+installed = false
