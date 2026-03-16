@@ -12,14 +12,23 @@ readonly CODEC="av1"          # modern, efficient codec; fallback handled below
 readonly QUALITY="very_high"  # quality preset: low/medium/high/very_high
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
-getdate()         { date '+%Y-%m-%d_%H.%M.%S'; }
-notify()          { notify-send "$1" "$2" -a "$APP_NAME"; }
-get_audio_sink()  { pactl list sources | awk '/Name.*[Ss]peaker/{print $2; exit}'; }
-get_monitor()     { hyprctl monitors -j | jq -r '.[] | select(.focused) | .name'; }
+getdate()        { date '+%Y-%m-%d_%H.%M.%S'; }
+notify()         { notify-send "$1" "$2" -a "$APP_NAME"; }
+get_monitor()    { hyprctl monitors -j | jq -r '.[] | select(.focused) | .name'; }
+
+get_audio_sink() {
+  local sink
+  sink="$(pactl get-default-sink).monitor"
+  if [[ "$sink" == ".monitor" ]]; then
+    notify "Recording error" "Audio sink not found"
+    exit 1
+  fi
+  echo "$sink"
+}
 
 get_region() {
   local raw
-  raw="$(slurp 2>&1)" || true
+  raw="$(slurp 2>/dev/null)" || true
   if [[ -z "$raw" ]]; then
     notify "Recording cancelled" "Selection was cancelled"
     exit 1
@@ -37,13 +46,13 @@ cd "$records_dir"
 
 # ─── Stop if already recording ────────────────────────────────────────────────
 if pgrep -f gpu-screen-recorder &>/dev/null; then
-  notify "Recording Stopped" "Saving file…"
+  notify "Stopping recording" "Saving file…"
   pkill -SIGINT -f gpu-screen-recorder
   exit 0
 fi
 
 # ─── Common recorder flags ────────────────────────────────────────────────────
-filename="recording_$(getdate).mp4"
+filename="recording_$(getdate).$CONTAINER"
 notify "Starting recording" "$filename"
 
 base_flags=(
@@ -51,7 +60,7 @@ base_flags=(
   -c "$CONTAINER"
   -k "$CODEC"
   -q "$QUALITY"
-  -restore-portal-session yes   # reuse portal session between runs
+  -restore-portal-session yes
   -cursor yes
   -fallback-cpu-encoding yes
   -o "$filename"
