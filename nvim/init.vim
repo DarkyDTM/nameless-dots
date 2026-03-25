@@ -5,7 +5,6 @@ set undoreload=999999
 
 set clipboard=unnamedplus
 set ignorecase
-set smartcase
 
 set number
 
@@ -17,6 +16,7 @@ colorscheme catppuccin
 
 nnoremap n N
 nnoremap N n
+nnoremap dd "_dd
 
 set fileencodings=utf-8,cp1251
 
