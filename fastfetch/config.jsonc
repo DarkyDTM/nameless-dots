@@ -16,10 +16,6 @@
 			"type": "os",
 			"format": "{name}"
 		},
-		{
-			"type": "kernel",
-			"format": "{release}"
-		},
 		"uptime",
 		"packages",
 		{
@@ -33,6 +29,6 @@
 		{
 			"type": "disk",
 			"format": "{size-used} / {size-total} ({size-percentage})"
-		}
+		},
 	]
 }
