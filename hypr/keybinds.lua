@@ -108,3 +108,7 @@ bind("SUPER+SPACE", exec("hyprctl switchxkblayout all next"))
 bind("SUPER+SHIFT+P", exec("hyprpicker -a"))
 bind("SUPER+SHIFT+R", exec(SCRIPT.."share_last_record.sh"))
 bind("SUPER+SHIFT+X", exec(SCRIPT.."info_in_notif.sh"))
+
+-- Session
+bind("CTRL+SUPER+F", exec("doas poweroff"))
+bind("CTRL+SUPER+S", exec("echo mem | doas tee /sys/power/state"))
